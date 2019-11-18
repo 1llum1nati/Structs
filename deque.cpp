@@ -117,7 +117,7 @@ protected:
 
 };
 
-class DequeD : public Deque {
+class DequeD : Deque {
 public:
     void push_frontD(int number) { push_front(number); }
     void push_backD(int number) { push_back(number); }
@@ -130,19 +130,33 @@ public:
     void backD() { back(); }
     int size() { return sizeOfDeque; }
     int &operator[] (int index);
-    int tempInt = -1;
+    
+    void ShellSort(DequeD deque)
+    {
+        int step = sizeOfDeque / 2;
+        while (step >= 1) {
+            for (int i = 0; i != (sizeOfDeque - step); ++i) {
+                for(int j = i; j >= 0 && deque[j] > deque[j + step]; --j) {
+                    deque[j] += deque[j + step];
+                    deque[j + step] = deque[j] - deque[j + step];
+                    deque[j] -= deque[j + step];
+                }
+            }
+            step /= 2;
+        }
+    }
 };
 
 int &DequeD::operator[] (int index) {
     Node *Temp = head;
     for (int i = 0; i < index; ++i) {
+        push_back(Temp->value);
         Temp = head->next;
         pop_front();
-        push_back(Temp->value);
     }
     for (int i = 0; i < index; ++i) {
-        pop_back();
         push_front(tail->value);
+        pop_back();
     }
     return Temp->value;
 }
@@ -161,7 +175,7 @@ int main()
         Example.initD(sizeOfDeque);
         std::cout << "Stack has been initialized!\n";
     }
-    while(choice != 11) {
+    while(choice != 12) {
         std::cout << "Enter number:\n" <<
             "1 - push_front\n" <<
             "2 - push_back\n" <<
@@ -173,7 +187,8 @@ int main()
             "8 - get value\n" <<
             "9 - set value\n" <<
             "10 - check empty\n" <<
-            "11 - stop\n" <<
+            "11 - ShellSort\n" <<
+            "12 - stop\n" <<
             "> ";
         std::cin >> choice;
         if (choice == 1) {
@@ -228,6 +243,9 @@ int main()
         }
         if (choice == 10) {
             Example.isEmptyD();
+        }
+        if (choice == 11) {
+            Example.ShellSort(Example);
         }
     }
 
