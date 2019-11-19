@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <ctime>
 
@@ -82,7 +83,37 @@ public:
     int size() { return sizeOfStack; }
 
     int &operator[] (int index);
-    int tempInt = -1;
+    
+    void heapify(StackD stack, int len, int i)
+    {
+        int largest = i;
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+
+        if (left < len && stack[left] > stack[largest])
+            largest = left;
+
+        if (right < len && stack[right] > stack[largest])
+            largest = right;
+
+        if (largest != i)
+        {
+            std::swap(stack[i], stack[largest]);
+            heapify(stack, len, largest);
+        }
+    }
+
+    void heapSort(StackD stack, int len)
+    {
+        for (int i = len / 2 - 1; i >= 0; i--)
+            heapify(stack, len, i);
+
+        for (int i = len - 1; i >= 0; i--)
+        {
+            std::swap(stack[0], stack[i]);
+            heapify(stack, i, 0);
+        }
+    }
 };
 
 int &StackD::operator[] (int index) {
@@ -123,6 +154,7 @@ int main()
             "5 - check front\n" <<
             "6 - get value\n" <<
             "7 - set value\n" <<
+            "8 - heapSort()\n" <<
             "9 - stop\n" <<
             "> ";
         std::cin >> choice;
@@ -159,12 +191,16 @@ int main()
             int tempIndex;
             std::cout << "Type index" << std::endl;
             std::cin >> tempIndex;
-            if (tempIndex > 0 && tempIndex < Example.size()) {
+            if (tempIndex >= 0 && tempIndex < Example.size()) {
                 std::cout << "Type value" << std::endl;
                 std::cin >> Example[tempIndex];
             }
             else
                 std::cout << "error" << std::endl;
+        }
+
+        if (choice == 8) {
+            Example.heapSort(Example, Example.size());
         }
     }
 
