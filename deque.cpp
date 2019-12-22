@@ -173,7 +173,7 @@ int main()
         int sizeOfDeque;
         std::cin >> sizeOfDeque;
         Example.initD(sizeOfDeque);
-        std::cout << "Stack has been initialized!\n";
+        std::cout << "Deque has been initialized!\n";
     }
     while(choice != 12) {
         std::cout << "Enter number:\n" <<
