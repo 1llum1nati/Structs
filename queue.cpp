@@ -133,6 +133,9 @@ public:
 
         for (int i = 0; i < len; ++i)
             queue[i] = temp[i];
+
+        delete[] unique;
+        delete[] temp;
     }
 
 };
