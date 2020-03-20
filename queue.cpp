@@ -97,61 +97,42 @@ public:
     void frontD() { front(); }
     void backD() { back(); }
     int size() { return sizeOfQueue; }
-    int &operator[] (int index);
-    
 
-    void CountingSort(QueueD queue) {
-        int len = size();
-        int *temp = new int[len];
-        int min = queue[0], max = queue[0], newSize;
-        for (int i = 1; i < len; ++i) { //max/min
-            if(queue[i] > max)
-                max = queue[i];
-            if(queue[i] < min)
-                min = queue[i];
-        }
-        newSize = max - min + 1;
-
-        int *unique = new int[newSize]; 
-        for (int i = min; i < len + min; ++i) { //подсчёт встречаемости каждого числа
-            unique[queue[i-min]-min]++;  
+    int Get(int index) {
+        int val;
+        for (int i = 0; i < sizeOfQueue; ++i) {
+            if(i == index) {
+                val = head->value;
+            }
+            int temp = head->value;
+            pop();
+            push(temp);
         }
 
-        for (int i = 0; i < newSize - 1; ++i) { //кумулятивное сложение
-            unique[i+1] += unique[i];
+        return val;
+    }
+
+    void Set(int index, int val) {
+        for (int i = 0; i < sizeOfQueue; ++i) {
+            if(i == index) {
+                head->value = val;
+            }
+            int temp = head->value;
+            pop();
+            push(temp);
         }
+    }
 
-        for (int i = newSize; i > 0; --i) { //смещение вправо
-            unique[i] = unique[i-1];
-        }
-        unique[0] = 0;
-
-        for(int i = 0; i < len; ++i) { //новый отсортированный массив
-            temp[unique[queue[i]-min]] = queue[i];
-            unique[queue[i]-min]++;
-        }
-
-        for (int i = 0; i < len; ++i)
-            queue[i] = temp[i];
-
-        delete[] unique;
-        delete[] temp;
+    void InsertionSort(QueueD queue) {
+    for(int i = 1; i < size(); i++)
+        for(int j = i; j > 0 && queue.Get(j-1) > queue.Get(j); j--) {
+            int temp = queue.Get(j-1);
+            queue.Set(j-1, queue.Get(j));
+            queue.Set(j, temp);
+        }   
     }
 
 };
-
-int &QueueD::operator[] (int index) {
-    Node *Temp = head;
-    for (int i = 0; i < sizeOfQueue; ++i) {
-		if(i == index) {
-			Temp = head;
-		}
-		int temp = head->value;
-        pop();
-        push(temp);
-    }
-    return Temp->value;
-}
 
 int main()
 {
@@ -177,7 +158,7 @@ int main()
             "6 - get value\n" <<
             "7 - set value\n" <<
             "8 - check empty\n" <<
-            "9 - CountingSort\n" <<
+            "9 - InsertionSort\n" <<
             "10 - stop\n" <<
             "> ";
         std::cin >> choice;
@@ -189,7 +170,7 @@ int main()
         }
 
         if (choice == 2) {
-            std::cout << "Done!\n"; 
+            std::cout << "Done!\n";
             Example.popD();
         }
 
@@ -207,18 +188,20 @@ int main()
             std::cout << "Type index" << std::endl;
             std::cin >> tempIndex;
             if (tempIndex >= 0 && tempIndex < Example.size()) {
-                std::cout << Example[tempIndex] << std::endl;
+                std::cout << Example.Get(tempIndex) << std::endl;
             }
             else
                 std::cout << "error" << std::endl;
         }
         if (choice == 7) {
-            int tempIndex;
+            int tempIndex, tempValue;
             std::cout << "Type index" << std::endl;
             std::cin >> tempIndex;
             if (tempIndex >= 0 && tempIndex < Example.size()) {
                 std::cout << "Type value" << std::endl;
-                std::cin >> Example[tempIndex];
+                std::cin >> tempValue;
+                Example.Set(tempIndex, tempValue);
+                std::cout << "Done!\n";
             }
             else
                 std::cout << "error" << std::endl;
@@ -227,7 +210,7 @@ int main()
             Example.isEmptyD();
         }
         if (choice == 9) {
-            Example.CountingSort(Example);
+            Example.InsertionSort(Example);
         }
     }
 
