@@ -20,7 +20,92 @@ public:
     void deleteArc(string mark1, string mark2);
     void changeMark(string oldMark, string newMark);
     void changeArc(const int& weight, string mark1, string mark2);
+
+    class Iterator_graph {
+    public:
+        Node* current;
+
+        Iterator_graph() {
+            current = nullptr;
+        }
+
+        Iterator_graph(Node *temp) {
+            current = temp;
+        }
+
+        Iterator_graph operator ++() {
+            Iterator_graph i = *this;
+            current = current->next;
+            return i;
+        }
+
+        Iterator_graph operator ++(int) {
+            Iterator_graph i = *this;
+            current = current->next;
+            return i;
+        }
+
+        bool operator !=(Iterator_graph other) {
+            return current != other.current;
+        }
+
+        Node* operator *() {
+            return current;
+        }
+    };
+
+    Iterator_graph begin() {
+        return Iterator_graph(firstNode);
+    }
+
+    Iterator_graph end() {
+        return Iterator_graph(nullptr);
+    }
+
+    class Iterator_int {
+    public:
+        int* current;
+
+        Iterator_int() {
+            current = nullptr;
+        }
+
+        Iterator_int(int *temp) {
+            current = temp;
+        }
+
+        Iterator_int operator ++() {
+            Iterator_int i = *this;
+            current = current + 1;
+            return i;
+        }
+
+        Iterator_int operator ++(int) {
+            Iterator_int i = *this;
+            current = current + 1;
+            return i;
+        }
+
+        bool operator !=(Iterator_int other) {
+            return current != other.current;
+        }
+
+        int operator *() {
+            return *current;
+        }
+    };
+
+    Iterator_int i_begin(Node *temp) {
+        return Iterator_int(temp->weightOfArcs);
+    }
+
+    Iterator_int i_end(Node *temp) {
+        return Iterator_int(temp->weightOfArcs + sizeOfGraph);
+    }
 };
+
+
+
 
 void Graph::addNode(string mark) {
     short flag = 0;
@@ -250,6 +335,8 @@ int main() {
         cout << endl;
     }
 
+    cout << endl;
+
     graph.deleteArc("a", "b");
     graph.deleteArc("d", "e");
 
@@ -262,17 +349,12 @@ int main() {
 
     Node* temp = graph.firstNode;
 
-    for(int i = 0; i < graph.sizeOfGraph; ++i) {
-
-        cout << temp->mark << endl;
-
-        for(int j = 0; j < graph.sizeOfGraph; ++j) {
-            cout << temp->weightOfArcs[j] << ' ';
+    for(Graph::Iterator_graph i = graph.begin(); i != graph.end(); ++i) {
+        cout << (*i)->mark << endl;
+        for(Graph::Iterator_int j = graph.i_begin((*i)); j != graph.i_end((*i)); ++j) {
+            cout << (*j) << ' ';
         }
-
-        temp = temp->next;
         cout << endl;
     }
-
 }
 
