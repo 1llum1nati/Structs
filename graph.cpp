@@ -80,9 +80,8 @@ void Graph::addArc(const int& weight, string mark1, string mark2) {
             check = check->next;
         }
 
-
         if(flag == 2) {
-            if(find->weightOfArcs[index] == 0)
+            if(!find->weightOfArcs[index])
                 find->weightOfArcs[index] = weight;
             else
                 cout << "Arc already exists!\n";
@@ -95,7 +94,7 @@ void Graph::addArc(const int& weight, string mark1, string mark2) {
 }
 
 void Graph::deleteNode(string mark) {
-    short flag;
+    short flag = 0;
     Node* check = firstNode;
     for(int i = 0; i < sizeOfGraph; ++i) {
         if(check->mark == mark) {
@@ -132,7 +131,79 @@ void Graph::deleteNode(string mark) {
     if(flag) {
         cout << "done!\n";
     }
+}
 
+void Graph::deleteArc(string mark1, string mark2) {
+    short flag = 0, index;
+    Node* check = firstNode, *find;
+    for(int i = 0; i < sizeOfGraph; ++i) {
+        if(check->mark == mark1) {
+            flag++;
+            find = check;
+        }
+        if(check->mark == mark2) {
+            flag++;
+            index = i;
+        }
+        check = check->next;
+    }
+
+    if(flag == 2) {
+        if(find->weightOfArcs[index])
+            find->weightOfArcs[index] = 0;
+        else
+            cout << "There's no arc!\n";
+    } else {
+        cout << "Didn't find nodes!\n";
+    }
+}
+
+void Graph::changeMark(string oldMark, string newMark) {
+    short flag = 0;
+    Node* check = firstNode, *find;
+    for(int i = 0; i < sizeOfGraph; ++i) {
+
+        if(check->mark == oldMark) {
+            ++flag;
+            find = check;
+        }
+        if(check->mark == newMark) {
+            --flag;
+            break;
+        }
+        check = check->next;
+    }
+    if(flag) {
+        find->mark = newMark;
+    } else {
+        cout << "Didn't find old mark or duplicate!\n";
+    }
+}
+
+void Graph::changeArc(const int& weight, string mark1, string mark2) {
+    if(weight > 0) {
+        short flag = 0, index;
+        Node* check = firstNode, *find;
+        for(int i = 0; i < sizeOfGraph; ++i) {
+            if(check->mark == mark1) {
+                flag++;
+                find = check;
+            }
+            if(check->mark == mark2) {
+                flag++;
+                index = i;
+            }
+            check = check->next;
+        }
+
+        if(flag == 2) {
+            find->weightOfArcs[index] = weight;
+        } else {
+            cout << "Didn't find nodes!\n";
+        }
+    } else {
+        cout << "Arc must be >= 0!\n";
+    }
 }
 
 int main() {
@@ -179,8 +250,15 @@ int main() {
         cout << endl;
     }
 
-    //graph.deleteNode("a");
-    //graph.deleteNode("b");
+    graph.deleteArc("a", "b");
+    graph.deleteArc("d", "e");
+
+    graph.addArc(13, "a", "b");
+    graph.addArc(9, "d", "e");
+
+    graph.changeMark("a", "AAA");
+
+    graph.changeArc(100, "AAA", "b");
 
     Node* temp = graph.firstNode;
 
