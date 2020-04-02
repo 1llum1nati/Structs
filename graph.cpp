@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <malloc.h>
 
@@ -48,7 +48,7 @@ struct Node {
     }
 
     Iterator end() {
-        return Iterator(relatedVertex + _msize(relatedVertex)/sizeof(Node*));
+        return Iterator(relatedVertex + _msize(relatedVertex)/sizeof(Node*)); //костыль для винды
     }
 };
 
