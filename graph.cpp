@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <malloc.h>
 
 using namespace std;
 
@@ -7,6 +8,48 @@ struct Node {
     string mark;
     Node *next = nullptr, *prev = nullptr;
     int *weightOfArcs;
+    Node **relatedVertex;
+
+    class Iterator {
+    public:
+        Node** current;
+
+        Iterator() {
+            current = nullptr;
+        }
+
+        Iterator(Node **temp) {
+            current = temp;
+        }
+
+        Iterator operator ++() {
+            Iterator i = *this;
+            current++;
+            return i;
+        }
+
+        Iterator operator ++(int) {
+            Iterator i = *this;
+            current++;
+            return i;
+        }
+
+        bool operator !=(Iterator other) {
+            return current != other.current;
+        }
+
+        Node* operator *() {
+            return *current;
+        }
+    };
+
+    Iterator begin() {
+        return Iterator(relatedVertex);
+    }
+
+    Iterator end() {
+        return Iterator(relatedVertex + _msize(relatedVertex)/sizeof(Node*));
+    }
 };
 
 class Graph {
@@ -21,31 +64,31 @@ public:
     void changeMark(string oldMark, string newMark);
     void changeArc(const int& weight, string mark1, string mark2);
 
-    class Iterator_graph {
+    class Iterator {
     public:
         Node* current;
 
-        Iterator_graph() {
+        Iterator() {
             current = nullptr;
         }
 
-        Iterator_graph(Node *temp) {
+        Iterator(Node *temp) {
             current = temp;
         }
 
-        Iterator_graph operator ++() {
-            Iterator_graph i = *this;
+        Iterator operator ++() {
+            Iterator i = *this;
             current = current->next;
             return i;
         }
 
-        Iterator_graph operator ++(int) {
-            Iterator_graph i = *this;
+        Iterator operator ++(int) {
+            Iterator i = *this;
             current = current->next;
             return i;
         }
 
-        bool operator !=(Iterator_graph other) {
+        bool operator !=(Iterator other) {
             return current != other.current;
         }
 
@@ -54,57 +97,14 @@ public:
         }
     };
 
-    Iterator_graph begin() {
-        return Iterator_graph(firstNode);
+    Iterator begin() {
+        return Iterator(firstNode);
     }
 
-    Iterator_graph end() {
-        return Iterator_graph(nullptr);
-    }
-
-    class Iterator_int {
-    public:
-        int* current;
-
-        Iterator_int() {
-            current = nullptr;
-        }
-
-        Iterator_int(int *temp) {
-            current = temp;
-        }
-
-        Iterator_int operator ++() {
-            Iterator_int i = *this;
-            current = current + 1;
-            return i;
-        }
-
-        Iterator_int operator ++(int) {
-            Iterator_int i = *this;
-            current = current + 1;
-            return i;
-        }
-
-        bool operator !=(Iterator_int other) {
-            return current != other.current;
-        }
-
-        int operator *() {
-            return *current;
-        }
-    };
-
-    Iterator_int i_begin(Node *temp) {
-        return Iterator_int(temp->weightOfArcs);
-    }
-
-    Iterator_int i_end(Node *temp) {
-        return Iterator_int(temp->weightOfArcs + sizeOfGraph);
+    Iterator end() {
+        return Iterator(nullptr);
     }
 };
-
-
 
 
 void Graph::addNode(string mark) {
@@ -120,8 +120,10 @@ void Graph::addNode(string mark) {
         Node* temp = new Node;
         temp->mark = mark;
         temp->weightOfArcs = new int[sizeOfGraph + 1];
+        temp->relatedVertex = new Node*[sizeOfGraph + 1];
         for(int i = 0; i < sizeOfGraph + 1; ++i) {
             temp->weightOfArcs[i] = 0;
+            temp->relatedVertex[i] = nullptr;
         }
 
         if(!sizeOfGraph) {
@@ -134,12 +136,17 @@ void Graph::addNode(string mark) {
             Node *temp2 = firstNode;
             for(int i = 0; i < sizeOfGraph; ++i) {
                 int* weightOfArcs_temp = new int[sizeOfGraph + 1];
+                Node** relatedVertex_temp = new Node*[sizeOfGraph + 1];
                 for (int j = 0; j < sizeOfGraph; ++j) {
                     weightOfArcs_temp[j] = temp2->weightOfArcs[j];
+                    relatedVertex_temp[j] = temp2->relatedVertex[j];
                 }
                 weightOfArcs_temp[sizeOfGraph] = 0;
+                relatedVertex_temp[sizeOfGraph] = nullptr;
                 delete[] temp2->weightOfArcs;
+                delete[] temp2->relatedVertex;
                 temp2->weightOfArcs = weightOfArcs_temp;
+                temp2->relatedVertex = relatedVertex_temp;
                 temp2 = temp2->next;
             }
         }
@@ -152,7 +159,7 @@ void Graph::addNode(string mark) {
 void Graph::addArc(const int& weight, string mark1, string mark2) {
     if(weight > 0) {
         short flag = 0, index;
-        Node* check = firstNode, *find;
+        Node* check = firstNode, *find, *find2;
         for(int i = 0; i < sizeOfGraph; ++i) {
             if(check->mark == mark1) {
                 flag++;
@@ -161,13 +168,16 @@ void Graph::addArc(const int& weight, string mark1, string mark2) {
             if(check->mark == mark2) {
                 flag++;
                 index = i;
+                find2 = check;
             }
             check = check->next;
         }
 
         if(flag == 2) {
-            if(!find->weightOfArcs[index])
+            if(!find->weightOfArcs[index]) {
                 find->weightOfArcs[index] = weight;
+                find->relatedVertex[index] = find2;
+            }
             else
                 cout << "Arc already exists!\n";
         } else {
@@ -300,7 +310,7 @@ int main() {
     graph.addNode(newMark4);
     graph.addNode(newMark5);
 
-    /*for(int i = 0; i < 10; ++i)
+    /*for(int i = 0; i < 15; ++i)
     {
         newMark2 += i + 81;
         graph.addNode(newMark2);
@@ -324,11 +334,14 @@ int main() {
     Node* temp2 = graph.firstNode;
 
     for(int i = 0; i < graph.sizeOfGraph; ++i) {
-
         cout << temp2->mark << endl;
 
         for(int j = 0; j < graph.sizeOfGraph; ++j) {
-            cout << temp2->weightOfArcs[j] << ' ';
+            if(temp2->relatedVertex[j]) {
+                cout << temp2->relatedVertex[j]->mark << '(' << temp2->weightOfArcs[j] << ") ";
+            } else {
+                cout << "0 ";
+            }
         }
 
         temp2 = temp2->next;
@@ -347,12 +360,16 @@ int main() {
 
     graph.changeArc(100, "AAA", "b");
 
-    Node* temp = graph.firstNode;
-
-    for(Graph::Iterator_graph i = graph.begin(); i != graph.end(); ++i) {
+    for(Graph::Iterator i = graph.begin(); i != graph.end(); ++i) {
         cout << (*i)->mark << endl;
-        for(Graph::Iterator_int j = graph.i_begin((*i)); j != graph.i_end((*i)); ++j) {
-            cout << (*j) << ' ';
+        int flag = 0;
+        for(Node::Iterator j = (*i)->begin(); j != (*i)->end(); ++j) {
+            if((*j)) {
+                cout << (*j)->mark << '(' << (*i)->weightOfArcs[flag] << ") ";
+            } else {
+                cout << "0 ";
+            }
+            flag++;
         }
         cout << endl;
     }
