@@ -16,42 +16,34 @@ protected:
     int sizeOfDeque = 0;
 
     void push_front(int value) {
+        Node *Temp = new Node;
+        Temp->value = value;
+        Temp->prev = NULL;
         if (head == NULL) {
-            Node *Temp = new Node;
-            Temp->value = value;
             Temp->next = NULL;
-            Temp->prev = NULL;
-            head = Temp;
             tail = Temp;
         }
         else {
-            Node *Temp = new Node;
             head->prev = Temp;
-            Temp->value = value;
             Temp->next = head;
-            Temp->prev = NULL;
-            head = Temp;
         }
+        head = Temp;
         ++sizeOfDeque;
     }
 
     void push_back(int value) {
+        Node *Temp = new Node;
+        Temp->value = value;
+        Temp->next = NULL;
         if (head == NULL) {
-            Node *Temp = new Node;
-            Temp->value = value;
-            Temp->next = NULL;
             Temp->prev = NULL;
             head = Temp;
-            tail = Temp;
         }
         else {
-            Node *Temp = new Node;
             tail->next = Temp;
-            Temp->value = value;
             Temp->prev = tail;
-            Temp->next = NULL;
-            tail = Temp;
         }
+        tail = Temp;
         ++sizeOfDeque;
     }
 
@@ -130,7 +122,7 @@ public:
     void backD() { back(); }
     int size() { return sizeOfDeque; }
     int &operator[] (int index);
-    
+
     void ShellSort(DequeD deque)
     {
         int step = sizeOfDeque / 2;
@@ -204,7 +196,7 @@ int main()
             Example.push_backD(number);
         }
         if (choice == 3) {
-            std::cout << "Done!\n"; 
+            std::cout << "Done!\n";
             Example.pop_frontD();
         }
         if (choice == 4) {
