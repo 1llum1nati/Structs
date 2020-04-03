@@ -1,4 +1,4 @@
-п»ї#include <iostream>
+#include <iostream>
 #include <string>
 #include <malloc.h>
 
@@ -18,7 +18,7 @@ struct Node {
             current = nullptr;
         }
 
-        Iterator(Node **temp) {
+        explicit Iterator(Node **temp) {
             current = temp;
         }
 
@@ -48,7 +48,7 @@ struct Node {
     }
 
     Iterator end() {
-        return Iterator(relatedVertex + _msize(relatedVertex)/sizeof(Node*)); //РєРѕСЃС‚С‹Р»СЊ РґР»СЏ РІРёРЅРґС‹
+        return Iterator(relatedVertex + _msize(relatedVertex)/sizeof(Node*)); //костыль для винды
     }
 };
 
@@ -57,12 +57,12 @@ public:
     Node *firstNode, *lastNode;
     int sizeOfGraph = 0;
 
-    void addNode(string mark);
-    void addArc(const int& weight, string mark1, string mark2);
-    void deleteNode(string mark);
-    void deleteArc(string mark1, string mark2);
-    void changeMark(string oldMark, string newMark);
-    void changeArc(const int& weight, string mark1, string mark2);
+    void addNode(const string& mark);
+    void addArc(const int& weight, const string& mark1,const string& mark2);
+    void deleteNode(const string& mark);
+    void deleteArc(const string& mark1, const string& mark2);
+    void changeMark(const string& oldMark, const string& newMark);
+    void changeArc(const int& weight, const string& mark1, const string& mark2);
 
     class Iterator {
     public:
@@ -72,7 +72,7 @@ public:
             current = nullptr;
         }
 
-        Iterator(Node *temp) {
+        explicit Iterator(Node *temp) {
             current = temp;
         }
 
@@ -107,7 +107,7 @@ public:
 };
 
 
-void Graph::addNode(string mark) {
+void Graph::addNode(const string& mark) {
     short flag = 0;
     Node* check = firstNode;
     for(int i = 0; i < sizeOfGraph; ++i) {
@@ -156,7 +156,7 @@ void Graph::addNode(string mark) {
     }
 }
 
-void Graph::addArc(const int& weight, string mark1, string mark2) {
+void Graph::addArc(const int& weight, const string& mark1, const string& mark2) {
     if(weight > 0) {
         short flag = 0, index;
         Node* check = firstNode, *find, *find2;
@@ -188,7 +188,7 @@ void Graph::addArc(const int& weight, string mark1, string mark2) {
     }
 }
 
-void Graph::deleteNode(string mark) {
+void Graph::deleteNode(const string& mark) {
     short flag = 0;
     Node* check = firstNode;
     for(int i = 0; i < sizeOfGraph; ++i) {
@@ -228,7 +228,7 @@ void Graph::deleteNode(string mark) {
     }
 }
 
-void Graph::deleteArc(string mark1, string mark2) {
+void Graph::deleteArc(const string& mark1, const string& mark2) {
     short flag = 0, index;
     Node* check = firstNode, *find;
     for(int i = 0; i < sizeOfGraph; ++i) {
@@ -253,7 +253,7 @@ void Graph::deleteArc(string mark1, string mark2) {
     }
 }
 
-void Graph::changeMark(string oldMark, string newMark) {
+void Graph::changeMark(const string& oldMark, const string& newMark) {
     short flag = 0;
     Node* check = firstNode, *find;
     for(int i = 0; i < sizeOfGraph; ++i) {
@@ -275,7 +275,7 @@ void Graph::changeMark(string oldMark, string newMark) {
     }
 }
 
-void Graph::changeArc(const int& weight, string mark1, string mark2) {
+void Graph::changeArc(const int& weight, const string& mark1, const string& mark2) {
     if(weight > 0) {
         short flag = 0, index;
         Node* check = firstNode, *find;
